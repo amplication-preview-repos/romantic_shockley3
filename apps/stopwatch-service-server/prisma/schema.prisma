@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Stopwatch {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String?
+  endTime   DateTime?
+  startTime DateTime?
+  laps      Lap[]
+}
+
+model Session {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  startTime DateTime?
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String?
+  endTime   DateTime?
+}
+
+model Lap {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  lapTime     DateTime?
+  lapNumber   Int?
+  stopwatch   Stopwatch? @relation(fields: [stopwatchId], references: [id])
+  stopwatchId String?
+}
+
+model User {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  firstName String?
+  lastName  String?
+  username  String    @unique
+  email     String?   @unique
+  password  String
+  roles     Json
+  sessions  Session[]
+}
